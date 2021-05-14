@@ -1,0 +1,36 @@
+version: "3.6"
+
+services:
+    database:
+        image: postgres
+        container_name: database
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=docker
+            - POSTGRES_DB=queries_challenge
+            - PGPORT=5432
+            - POSTGRES_HOST_AUTH_METHOD=trust
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+        volumes:
+            - pgdata:/data/postgres
+    app:    
+        build: .
+        container_name: ignite
+        ports:
+            - 3333:3333
+        volumes:
+            - .:/usr/app
+        links:
+            - database
+        depends_on: 
+            - database 
+
+            
+volumes:
+    pgdata:
+        driver: local
